@@ -10,6 +10,7 @@ import { useSelector, useDispatch } from "react-redux";
 
 function GameBoard() {
   const points = useSelector((state) => state.counter.value);
+  const board = useSelector((state) => state.board.value);
   const dispatch = useDispatch();
 
   function takeValue(cell, rowIndex, cellIndex) {
@@ -21,13 +22,6 @@ function GameBoard() {
     }
   }
 
-  let board = [
-    [1, 3, 4],
-    [2, 4, 6, 7],
-    [1, 3, 4, 6, 4],
-    [2, 4, 6, 7],
-    [2, 4, 6],
-  ];
   return (
     <main>
       <h2 className="text-center">punteggio:{points}</h2>
