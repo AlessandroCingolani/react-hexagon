@@ -5,8 +5,8 @@ import "./GameBoard.scss";
 //   return randomNumber;
 // }
 
-function takeValue(e) {
-  console.log(e);
+function takeValue(cell, rowIndex, cellIndex) {
+  console.log("valore:", cell, "riga:", rowIndex, "cella:", cellIndex);
 }
 
 function GameBoard() {
@@ -25,9 +25,7 @@ function GameBoard() {
             {row.map((cell, cellIndex) => (
               <div
                 key={cellIndex}
-                onClick={(e) =>
-                  takeValue(e.target.textContent, rowIndex, cellIndex)
-                }
+                onClick={() => takeValue(cell, rowIndex, cellIndex)}
                 className="hexagon d-flex justify-content-center align-items-center"
               >
                 <span>{cell}</span>
