@@ -10,7 +10,9 @@ export const boardSlice = createSlice({
       [0, 0, 0, 0, 0],
       [0, 0, 0, 0],
       [0, 0, 0],
-    ]
+    ],
+    sumNumber:0,
+    startGame:false
   },
   reducers:{
     generateRandom: (state) => {
@@ -23,8 +25,16 @@ export const boardSlice = createSlice({
       });
       // return value updated
       return { value: updatedValue };
+    },
+    generateTotal:(state)=> {
+      const updateNumber = Math.floor(Math.random() * 12) + 10
+        return {...state ,sumNumber:updateNumber}  
+    },
+    startGame:(state)=> {
+        state.startGame = true
+        console.log('inizia il gioco');
     }
   }
 })
-export const {generateRandom} = boardSlice.actions
+export const {generateRandom,generateTotal,startGame} = boardSlice.actions
 export const boardReducer = boardSlice.reducer
