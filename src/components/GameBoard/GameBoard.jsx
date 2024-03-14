@@ -1,12 +1,8 @@
 import { increment } from "../../redux/counterSlice";
 import { decrement } from "../../redux/counterSlice";
+import { generateRandom } from "../../redux/boardSlice";
 import "./GameBoard.scss";
 import { useSelector, useDispatch } from "react-redux";
-
-// function generateRandom() {
-//   const randomNumber = Math.floor(Math.random() * 12) + 1;
-//   return randomNumber;
-// }
 
 function GameBoard() {
   const points = useSelector((state) => state.counter.value);
@@ -24,6 +20,7 @@ function GameBoard() {
 
   return (
     <main>
+      <button onClick={() => dispatch(generateRandom())}> Genera random</button>
       <h2 className="text-center">punteggio:{points}</h2>
       <div id="game-board" className="hex-container">
         {board.map((row, rowIndex) => (
@@ -45,76 +42,3 @@ function GameBoard() {
 }
 
 export default GameBoard;
-
-{
-  /* <div className="row">
-          <div
-            onClick={(e) => takeValue(e.target.textContent)}
-            className="hexagon d-flex justify-content-center align-items-center"
-          >
-            <span>{generateRandom()}</span>
-          </div>
-          <div className="hexagon d-flex justify-content-center align-items-center">
-            <span>{generateRandom()}</span>
-          </div>
-          <div className="hexagon d-flex justify-content-center align-items-center">
-            <span>{generateRandom()}</span>
-          </div>
-        </div>
-        <div className="row">
-          <div className="hexagon d-flex justify-content-center align-items-center">
-            <span>{generateRandom()}</span>
-          </div>
-          <div className="hexagon d-flex justify-content-center align-items-center">
-            <span>{generateRandom()}</span>
-          </div>
-          <div className="hexagon d-flex justify-content-center align-items-center">
-            <span>{generateRandom()}</span>
-          </div>
-          <div className="hexagon d-flex justify-content-center align-items-center">
-            <span>{generateRandom()}</span>
-          </div>
-        </div>
-        <div className="row">
-          <div className="hexagon d-flex justify-content-center align-items-center">
-            <span>{generateRandom()}</span>
-          </div>
-          <div className="hexagon d-flex justify-content-center align-items-center">
-            <span>{generateRandom()}</span>
-          </div>
-          <div className="hexagon d-flex justify-content-center align-items-center">
-            <span>{generateRandom()}</span>
-          </div>
-          <div className="hexagon d-flex justify-content-center align-items-center">
-            <span>{generateRandom()}</span>
-          </div>
-          <div className="hexagon d-flex justify-content-center align-items-center">
-            <span>{generateRandom()}</span>
-          </div>
-        </div>
-        <div className="row">
-          <div className="hexagon d-flex justify-content-center align-items-center">
-            <span>{generateRandom()}</span>
-          </div>
-          <div className="hexagon d-flex justify-content-center align-items-center">
-            <span>{generateRandom()}</span>
-          </div>
-          <div className="hexagon d-flex justify-content-center align-items-center">
-            <span>{generateRandom()}</span>
-          </div>
-          <div className="hexagon d-flex justify-content-center align-items-center">
-            <span>{generateRandom()}</span>
-          </div>
-        </div>
-        <div className="row">
-          <div className="hexagon d-flex justify-content-center align-items-center">
-            <span>{generateRandom()}</span>
-          </div>
-          <div className="hexagon d-flex justify-content-center align-items-center">
-            <span>{generateRandom()}</span>
-          </div>
-          <div className="hexagon d-flex justify-content-center align-items-center">
-            <span>{generateRandom()}</span>
-          </div>
-        </div> */
-}
