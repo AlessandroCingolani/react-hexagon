@@ -14,13 +14,15 @@ export const boardSlice = createSlice({
   },
   reducers:{
     generateRandom: (state) => {
+      // map row
       const updatedValue = state.value.map((row) => {
+        // map cell with random number
         return row.map(() => {
           return Math.floor(Math.random() * 12) + 1; 
         });
       });
-    
-      return { ...state, value: updatedValue };
+      // return value updated
+      return { value: updatedValue };
     }
   }
 })
