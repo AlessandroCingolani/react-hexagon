@@ -38,6 +38,23 @@
       border-top: 27.5px solid #6C7A89;
     }
 
+    // Span number displayed
+    span {
+      font-size: 2.5rem;
+      font-weight: 600;
+    }
+    // Hover 
+    &:hover {
+      cursor: pointer;
+      background-color: green;
+      &::after {
+        border-top: 27.5px solid green;
+      }
+      &::before {
+        border-bottom: 27.5px solid green;
+      }
+    }
+
   }
 
   @media (max-width: 530px) {
@@ -57,6 +74,9 @@
   
       &::after {
         border-top: 20px solid #6C7A89;
+      }
+      span {
+        font-size: 1.5rem;
       }
     }
   }
