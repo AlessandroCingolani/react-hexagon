@@ -78,6 +78,15 @@
       span {
         font-size: 1.5rem;
       }
+      // Hover 
+    &:hover {
+      &::after {
+        border-top: 20px solid green;
+      }
+      &::before {
+        border-bottom: 20px solid green;
+      }
+    }
     }
   }
 }
