@@ -1,15 +1,26 @@
+import { increment } from "../../redux/counterSlice";
+import { decrement } from "../../redux/counterSlice";
 import "./GameBoard.scss";
+import { useSelector, useDispatch } from "react-redux";
 
 // function generateRandom() {
 //   const randomNumber = Math.floor(Math.random() * 12) + 1;
 //   return randomNumber;
 // }
 
-function takeValue(cell, rowIndex, cellIndex) {
-  console.log("valore:", cell, "riga:", rowIndex, "cella:", cellIndex);
-}
-
 function GameBoard() {
+  const points = useSelector((state) => state.counter.value);
+  const dispatch = useDispatch();
+
+  function takeValue(cell, rowIndex, cellIndex) {
+    console.log("valore:", cell, "riga:", rowIndex, "cella:", cellIndex);
+    if (cell > 5) {
+      dispatch(increment());
+    } else {
+      dispatch(decrement());
+    }
+  }
+
   let board = [
     [1, 3, 4],
     [2, 4, 6, 7],
@@ -19,6 +30,7 @@ function GameBoard() {
   ];
   return (
     <main>
+      <h2 className="text-center">punteggio:{points}</h2>
       <div id="game-board" className="hex-container">
         {board.map((row, rowIndex) => (
           <div key={rowIndex} className="row">
