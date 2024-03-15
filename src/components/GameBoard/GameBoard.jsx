@@ -13,6 +13,7 @@ function GameBoard() {
   const board = useSelector((state) => state.board.value);
   const isStart = useSelector((state) => state.board.startGame);
   const sumNumber = useSelector((state) => state.board.sumNumber);
+  let userSelected = useSelector((state) => state.board.userSelections);
   // dispatch
   const dispatch = useDispatch();
 
@@ -20,6 +21,27 @@ function GameBoard() {
   function arrayStructure(cell, rowIndex, cellIndex) {
     return [cell, rowIndex, cellIndex];
   }
+
+  // functions for check array is inside userSelected
+  function checkArray(arr1, arr2) {
+    const sortedArr1 = arr1.map((subArr) => subArr.slice().sort().join());
+    const sortedArr2 = arr2.map((subArr) => subArr.slice().sort().join());
+    sortedArr1.sort();
+    sortedArr2.sort();
+    const str1 = sortedArr1.join();
+    const str2 = sortedArr2.join();
+    return str1 === str2;
+  }
+
+  function isDuplicateArray(arr, arrList) {
+    for (const existingArr of arrList) {
+      if (checkArray(arr, existingArr)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  //
 
   // empty array data
   let clickedData = [];
@@ -46,14 +68,22 @@ function GameBoard() {
           return accumulator + clickedData[0];
         }, 0);
         if (result === sumNumber) {
-          dispatch(addUserSelection(clickedData));
-          dispatch(increment());
+          if (!isDuplicateArray(clickedData, userSelected)) {
+            dispatch(addUserSelection(clickedData));
+            dispatch(increment());
+            console.log("ADDED");
+          } else {
+            dispatch(decrement());
+            console.log("EXIST");
+          }
         } else {
           dispatch(decrement());
+          console.log("WRONG");
         }
       }
     }
   }
+
   // timer to display numberSum
   useEffect(() => {
     const timer = setTimeout(() => {
