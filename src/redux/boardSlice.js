@@ -12,7 +12,8 @@ export const boardSlice = createSlice({
       [0, 0, 0],
     ],
     sumNumber:0,
-    startGame:false
+    startGame:false,
+    userSelections: [],
   },
   reducers:{
     generateRandom: (state) => {
@@ -32,8 +33,12 @@ export const boardSlice = createSlice({
     },
     startGame:(state)=> {
        return {...state ,startGame:true}  
+    },
+    addUserSelection: (state, action) => {
+      state.userSelections = [...state.userSelections, action.payload];
+      console.log(state.userSelections);
     }
   }
 })
-export const {generateRandom,generateTotal,startGame} = boardSlice.actions
+export const {generateRandom,generateTotal,startGame,addUserSelection } = boardSlice.actions
 export const boardReducer = boardSlice.reducer
