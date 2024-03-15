@@ -46,15 +46,24 @@
     // Hover 
     &:hover {
       cursor: pointer;
-      background-color: green;
+      background-color:darken(#6C7A89, 10);
       &::after {
-        border-top: 27.5px solid green;
+        border-top: 27.5px solid darken(#6C7A89, 10);
       }
       &::before {
-        border-bottom: 27.5px solid green;
+        border-bottom: 27.5px solid darken(#6C7A89, 10);
       }
     }
 
+  }
+  .active {
+    background-color: green;
+    &::after {
+      border-top: 27.5px solid green;
+    }
+    &::before {
+      border-bottom: 27.5px solid green;
+    }
   }
 
   @media (max-width: 530px) {
