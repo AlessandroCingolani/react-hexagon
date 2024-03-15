@@ -2,6 +2,7 @@ import { increment } from "../../redux/counterSlice";
 import { decrement } from "../../redux/counterSlice";
 import { generateRandom } from "../../redux/boardSlice";
 import { generateTotal } from "../../redux/boardSlice";
+import { addUserSelection } from "../../redux/boardSlice";
 import { useEffect } from "react";
 import "./GameBoard.scss";
 import { useSelector, useDispatch } from "react-redux";
@@ -38,12 +39,14 @@ function GameBoard() {
     // if not already clicked push data
     if (!isAlreadyClicked && clickedData.length < 3) {
       clickedData.push(newData);
+
       // when selected 3 different options reduce to sum first value cell number
       if (clickedData.length === 3) {
         const result = clickedData.reduce((accumulator, clickedData) => {
           return accumulator + clickedData[0];
         }, 0);
         if (result === sumNumber) {
+          dispatch(addUserSelection(clickedData));
           dispatch(increment());
         } else {
           dispatch(decrement());
@@ -69,15 +72,27 @@ function GameBoard() {
           <h2>Punteggio: {points}</h2>
           {board.map((row, rowIndex) => (
             <div key={rowIndex} className="row">
-              {row.map((cell, cellIndex) => (
-                <div
-                  key={cellIndex}
-                  onClick={() => handleClick(cell, rowIndex, cellIndex)}
-                  className="hexagon d-flex justify-content-center align-items-center"
-                >
-                  <span>{cell}</span>
-                </div>
-              ))}
+              {row.map((cell, cellIndex) => {
+                const isCellClicked = clickedData.some(
+                  (item) =>
+                    item[0] === cell &&
+                    item[1] === rowIndex &&
+                    item[2] === cellIndex
+                );
+                const cellClassName = `hexagon d-flex justify-content-center align-items-center ${
+                  isCellClicked ? "active" : ""
+                }`;
+
+                return (
+                  <div
+                    key={cellIndex}
+                    onClick={() => handleClick(cell, rowIndex, cellIndex)}
+                    className={cellClassName}
+                  >
+                    <span>{cell}</span>
+                  </div>
+                );
+              })}
             </div>
           ))}
         </div>
