@@ -7,25 +7,55 @@ import "./GameBoard.scss";
 import { useSelector, useDispatch } from "react-redux";
 
 function GameBoard() {
+  // selectors
   const points = useSelector((state) => state.counter.value);
   const board = useSelector((state) => state.board.value);
   const isStart = useSelector((state) => state.board.startGame);
   const sumNumber = useSelector((state) => state.board.sumNumber);
+  // dispatch
   const dispatch = useDispatch();
 
-  function takeValue(cell, rowIndex, cellIndex) {
-    console.log("valore:", cell, "riga:", rowIndex, "cella:", cellIndex);
-    if (cell > 5) {
-      dispatch(increment());
-    } else {
-      dispatch(decrement());
-    }
+  // array structure
+  function arrayStructure(cell, rowIndex, cellIndex) {
+    return [cell, rowIndex, cellIndex];
   }
 
+  // empty array data
+  let clickedData = [];
+
+  // at click create an array with cell row and cell index
+  function handleClick(cell, rowIndex, cellIndex) {
+    const newData = arrayStructure(cell, rowIndex, cellIndex);
+
+    // method some at click check if cicled item are inside at cicled data
+    const isAlreadyClicked = clickedData.some(
+      (item) =>
+        item[0] === newData[0] &&
+        item[1] === newData[1] &&
+        item[2] === newData[2]
+    );
+
+    // if not already clicked push data
+    if (!isAlreadyClicked && clickedData.length < 3) {
+      clickedData.push(newData);
+      // when selected 3 different options reduce to sum first value cell number
+      if (clickedData.length === 3) {
+        const result = clickedData.reduce((accumulator, clickedData) => {
+          return accumulator + clickedData[0];
+        }, 0);
+        if (result === sumNumber) {
+          dispatch(increment());
+        } else {
+          dispatch(decrement());
+        }
+      }
+    }
+  }
+  // timer to display numberSum
   useEffect(() => {
     const timer = setTimeout(() => {
       dispatch(generateTotal());
-    }, 6000);
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -42,7 +72,7 @@ function GameBoard() {
               {row.map((cell, cellIndex) => (
                 <div
                   key={cellIndex}
-                  onClick={() => takeValue(cell, rowIndex, cellIndex)}
+                  onClick={() => handleClick(cell, rowIndex, cellIndex)}
                   className="hexagon d-flex justify-content-center align-items-center"
                 >
                   <span>{cell}</span>
