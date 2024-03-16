@@ -50,43 +50,50 @@ function GameBoard() {
   let clickedData = [];
 
   // at click create an array with cell row and cell index
-  function handleClick(cell, rowIndex, cellIndex) {
-    const newData = arrayStructure(cell, rowIndex, cellIndex);
+  function handleClick(event, cell, rowIndex, cellIndex) {
+    // phase selection no active so you cant click
+    if (!selection) {
+      event.preventDefault();
+      console.log(event);
+      console.log("INATTIVO");
+    } else {
+      const newData = arrayStructure(cell, rowIndex, cellIndex);
 
-    // method some at click check if cicled item are inside at cicled data
-    const isAlreadyClicked = clickedData.some(
-      (item) =>
-        item[0] === newData[0] &&
-        item[1] === newData[1] &&
-        item[2] === newData[2]
-    );
+      // method some at click check if cicled item are inside at cicled data
+      const isAlreadyClicked = clickedData.some(
+        (item) =>
+          item[0] === newData[0] &&
+          item[1] === newData[1] &&
+          item[2] === newData[2]
+      );
 
-    // if not already clicked push data
-    if (!isAlreadyClicked && clickedData.length < 3) {
-      clickedData.push(newData);
+      // if not already clicked push data
+      if (!isAlreadyClicked && clickedData.length < 3) {
+        clickedData.push(newData);
 
-      // when selected 3 different options reduce to sum first value cell number
-      if (clickedData.length === 3) {
-        const result = clickedData.reduce((accumulator, clickedData) => {
-          return accumulator + clickedData[0];
-        }, 0);
+        // when selected 3 different options reduce to sum first value cell number
+        if (clickedData.length === 3) {
+          const result = clickedData.reduce((accumulator, clickedData) => {
+            return accumulator + clickedData[0];
+          }, 0);
 
-        // first condition
-        if (result === sumNumber) {
-          // use function to check array duplicated with for of and parse string sorted with function checkArray
-          if (!isDuplicateArray(clickedData, userSelected)) {
-            dispatch(addUserSelection(clickedData));
-            dispatch(increment());
-            console.log("CORRECT");
-            // exist combination
+          // first condition
+          if (result === sumNumber) {
+            // use function to check array duplicated with for of and parse string sorted with function checkArray
+            if (!isDuplicateArray(clickedData, userSelected)) {
+              dispatch(addUserSelection(clickedData));
+              dispatch(increment());
+              console.log("CORRECT");
+              // exist combination
+            } else {
+              dispatch(decrement());
+              console.log("EXIST");
+            }
+            // wrong selection
           } else {
             dispatch(decrement());
-            console.log("EXIST");
+            console.log("WRONG");
           }
-          // wrong selection
-        } else {
-          dispatch(decrement());
-          console.log("WRONG");
         }
       }
     }
@@ -154,7 +161,9 @@ function GameBoard() {
                 return (
                   <div
                     key={cellIndex}
-                    onClick={() => handleClick(cell, rowIndex, cellIndex)}
+                    onClick={() =>
+                      handleClick(event, cell, rowIndex, cellIndex)
+                    }
                     className={cellClassName}
                   >
                     <span className="cell">{cell}</span>
