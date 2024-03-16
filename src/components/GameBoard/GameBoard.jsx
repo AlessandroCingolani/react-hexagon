@@ -3,8 +3,10 @@ import { decrement } from "../../redux/counterSlice";
 import { generateRandom } from "../../redux/boardSlice";
 import { generateTotal } from "../../redux/boardSlice";
 import { addUserSelection } from "../../redux/boardSlice";
+import { selectionPhase } from "../../redux/boardSlice";
 import { useEffect } from "react";
 import "./GameBoard.scss";
+import Countdown from "../Countdown/Countdown";
 import { useSelector, useDispatch } from "react-redux";
 
 function GameBoard() {
@@ -13,6 +15,7 @@ function GameBoard() {
   const board = useSelector((state) => state.board.value);
   const isStart = useSelector((state) => state.board.startGame);
   const sumNumber = useSelector((state) => state.board.sumNumber);
+  const selection = useSelector((state) => state.board.selectionPhase);
   let userSelected = useSelector((state) => state.board.userSelections);
   // dispatch
   const dispatch = useDispatch();
@@ -67,15 +70,20 @@ function GameBoard() {
         const result = clickedData.reduce((accumulator, clickedData) => {
           return accumulator + clickedData[0];
         }, 0);
+
+        // first condition
         if (result === sumNumber) {
+          // use function to check array duplicated with for of and parse string sorted with function checkArray
           if (!isDuplicateArray(clickedData, userSelected)) {
             dispatch(addUserSelection(clickedData));
             dispatch(increment());
-            console.log("ADDED");
+            console.log("CORRECT");
+            // exist combination
           } else {
             dispatch(decrement());
             console.log("EXIST");
           }
+          // wrong selection
         } else {
           dispatch(decrement());
           console.log("WRONG");
@@ -86,19 +94,49 @@ function GameBoard() {
 
   // timer to display numberSum
   useEffect(() => {
+    let cells = document.querySelectorAll(".cell");
+    cells.forEach((cell) => {
+      cell.classList.remove("d-none");
+    });
     const timer = setTimeout(() => {
       dispatch(generateTotal());
-    }, 2000);
+      dispatch(selectionPhase(true));
+      // select class cell and add d-none after the timeout
+      let cells = document.querySelectorAll(".cell");
+      cells.forEach((cell) => {
+        cell.classList.add("d-none");
+      });
+    }, 10000);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [board]);
 
   return (
     <main>
-      <h1>{sumNumber}</h1>
+      {/* COUNTDOWN COMPONENT */}
+      {isStart && !selection ? (
+        <Countdown
+          board={board}
+          isStart={isStart}
+          selectionPhase={selection}
+          ciao={10}
+        ></Countdown>
+      ) : selection ? (
+        <Countdown
+          board={board}
+          isStart={isStart}
+          selectionPhase={selection}
+          ciao={20}
+        ></Countdown>
+      ) : null}
       <button onClick={() => dispatch(generateRandom())}> Genera random</button>
       {isStart ? (
         <div id="game-board" className="hex-container">
+          <h1>
+            {sumNumber > 0
+              ? "Somma dei tre numeri:" + sumNumber
+              : "Memorizza i numeri"}
+          </h1>
           <h2>Punteggio: {points}</h2>
           {board.map((row, rowIndex) => (
             <div key={rowIndex} className="row">
@@ -119,7 +157,7 @@ function GameBoard() {
                     onClick={() => handleClick(cell, rowIndex, cellIndex)}
                     className={cellClassName}
                   >
-                    <span>{cell}</span>
+                    <span className="cell">{cell}</span>
                   </div>
                 );
               })}
