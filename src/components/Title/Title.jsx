@@ -1,6 +1,8 @@
 import "./Title.scss";
 import { useSelector, useDispatch } from "react-redux";
 import { startGame } from "../../redux/boardSlice";
+import { generateRandom } from "../../redux/boardSlice";
+import { selectionPhase } from "../../redux/boardSlice";
 
 function Title() {
   const isStart = useSelector((state) => state.board.startGame);
@@ -18,10 +20,14 @@ function Title() {
             totam ipsum consequuntur. Porro.
           </p>
           <button
-            onClick={() => dispatch(startGame())}
+            onClick={() => {
+              dispatch(startGame());
+              dispatch(generateRandom());
+              dispatch(selectionPhase(false));
+            }}
             className="btn btn-success"
           >
-            Inizia partita
+            Start game
           </button>
         </div>
       ) : null}
