@@ -4,6 +4,7 @@ import { generateRandom } from "../../redux/boardSlice";
 import { generateTotal } from "../../redux/boardSlice";
 import { addUserSelection } from "../../redux/boardSlice";
 import { selectionPhase } from "../../redux/boardSlice";
+import { selectedCell } from "../../redux/boardSlice";
 import { useEffect } from "react";
 import "./GameBoard.scss";
 import Countdown from "../Countdown/Countdown";
@@ -16,6 +17,7 @@ function GameBoard() {
   const isStart = useSelector((state) => state.board.startGame);
   const sumNumber = useSelector((state) => state.board.sumNumber);
   const selection = useSelector((state) => state.board.selectionPhase);
+  const clickedData = useSelector((state) => state.board.clickedData);
   let userSelected = useSelector((state) => state.board.userSelections);
   // dispatch
   const dispatch = useDispatch();
@@ -46,15 +48,37 @@ function GameBoard() {
   }
   //
 
-  // empty array data
-  let clickedData = [];
+  // use effect when change clicked data
+  useEffect(() => {
+    if (clickedData.length === 3) {
+      const result = clickedData.reduce((accumulator, clickedData) => {
+        return accumulator + clickedData[0];
+      }, 0);
+
+      if (result === sumNumber) {
+        if (!isDuplicateArray(clickedData, userSelected)) {
+          dispatch(addUserSelection(clickedData));
+          dispatch(increment());
+          console.log("CORRECT");
+          dispatch(selectedCell("DELETE"));
+        } else {
+          dispatch(decrement());
+          dispatch(selectedCell("DELETE"));
+          console.log("EXIST");
+        }
+      } else {
+        dispatch(decrement());
+        dispatch(selectedCell("DELETE"));
+        console.log("WRONG");
+      }
+    }
+  }, [clickedData]);
 
   // at click create an array with cell row and cell index
   function handleClick(event, cell, rowIndex, cellIndex) {
     // phase selection no active so you cant click
     if (!selection) {
       event.preventDefault();
-      console.log(event);
       console.log("INATTIVO");
     } else {
       const newData = arrayStructure(cell, rowIndex, cellIndex);
@@ -69,32 +93,7 @@ function GameBoard() {
 
       // if not already clicked push data
       if (!isAlreadyClicked && clickedData.length < 3) {
-        clickedData.push(newData);
-
-        // when selected 3 different options reduce to sum first value cell number
-        if (clickedData.length === 3) {
-          const result = clickedData.reduce((accumulator, clickedData) => {
-            return accumulator + clickedData[0];
-          }, 0);
-
-          // first condition
-          if (result === sumNumber) {
-            // use function to check array duplicated with for of and parse string sorted with function checkArray
-            if (!isDuplicateArray(clickedData, userSelected)) {
-              dispatch(addUserSelection(clickedData));
-              dispatch(increment());
-              console.log("CORRECT");
-              // exist combination
-            } else {
-              dispatch(decrement());
-              console.log("EXIST");
-            }
-            // wrong selection
-          } else {
-            dispatch(decrement());
-            console.log("WRONG");
-          }
-        }
+        dispatch(selectedCell([newData]));
       }
     }
   }
@@ -109,10 +108,10 @@ function GameBoard() {
       dispatch(generateTotal());
       dispatch(selectionPhase(true));
       // select class cell and add d-none after the timeout
-      let cells = document.querySelectorAll(".cell");
-      cells.forEach((cell) => {
-        cell.classList.add("d-none");
-      });
+      // let cells = document.querySelectorAll(".cell");
+      // cells.forEach((cell) => {
+      //   cell.classList.add("d-none");
+      // });
     }, 10000);
 
     return () => clearTimeout(timer);
