@@ -1,10 +1,10 @@
 import { increment } from "../../redux/counterSlice";
 import { decrement } from "../../redux/counterSlice";
-import { generateRandom } from "../../redux/boardSlice";
 import { generateTotal } from "../../redux/boardSlice";
 import { addUserSelection } from "../../redux/boardSlice";
 import { selectionPhase } from "../../redux/boardSlice";
 import { selectedCell } from "../../redux/boardSlice";
+import { resetBoard } from "../../redux/boardSlice";
 import { useEffect, useState } from "react";
 import "./GameBoard.scss";
 import Countdown from "../Countdown/Countdown";
@@ -13,6 +13,7 @@ import { useSelector, useDispatch } from "react-redux";
 function GameBoard() {
   // selectors
   const points = useSelector((state) => state.counter.value);
+  const stage = useSelector((state) => state.counter.stage);
   const board = useSelector((state) => state.board.value);
   const isStart = useSelector((state) => state.board.startGame);
   const sumNumber = useSelector((state) => state.board.sumNumber);
@@ -28,7 +29,7 @@ function GameBoard() {
   }
 
   // message
-  const [messageDisplay, setMessaggio] = useState("");
+  const [messageDisplay, setMessage] = useState("");
 
   // functions for check array is inside userSelected
   function checkArray(arr1, arr2) {
@@ -62,19 +63,19 @@ function GameBoard() {
         if (!isDuplicateArray(clickedData, userSelected)) {
           dispatch(addUserSelection(clickedData));
           dispatch(increment());
-          setMessaggio("Combinazione corretta");
+          setMessage("Combinazione corretta");
           dispatch(selectedCell("DELETE"));
         } else {
           dispatch(decrement());
           dispatch(selectedCell("DELETE"));
 
-          setMessaggio("Combinazione già esistente");
+          setMessage("Combinazione già esistente");
           console.log("EXIST");
         }
       } else {
         dispatch(decrement());
         dispatch(selectedCell("DELETE"));
-        setMessaggio("Combinazione errata");
+        setMessage("Combinazione errata");
         console.log("WRONG");
       }
     }
@@ -106,42 +107,43 @@ function GameBoard() {
 
   // timer to display numberSum
   useEffect(() => {
+    // reset at start
+    setMessage("");
+    dispatch(selectedCell("DELETE"));
+    dispatch(generateTotal("RESET"));
+    dispatch(addUserSelection("DELETE"));
+
     let cells = document.querySelectorAll(".cell");
     cells.forEach((cell) => {
       cell.classList.remove("d-none");
     });
-    const timer = setTimeout(() => {
-      dispatch(generateTotal());
-      dispatch(selectionPhase(true));
-      // select class cell and add d-none after the timeout
-      // let cells = document.querySelectorAll(".cell");
-      // cells.forEach((cell) => {
-      //   cell.classList.add("d-none");
-      // });
-    }, 10000);
-
-    return () => clearTimeout(timer);
-  }, [board]);
+    if (isStart) {
+      const timer = setTimeout(() => {
+        dispatch(generateTotal());
+        dispatch(selectionPhase(true));
+        // select class cell and add d-none after the timeout
+        // let cells = document.querySelectorAll(".cell");
+        // cells.forEach((cell) => {
+        //   cell.classList.add("d-none");
+        // });
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [board, stage]);
 
   return (
     <main>
       {/* COUNTDOWN COMPONENT */}
       {isStart && !selection ? (
-        <Countdown
-          board={board}
-          isStart={isStart}
-          selectionPhase={selection}
-          ciao={10}
-        ></Countdown>
+        <Countdown isStart={isStart} ciao={2}></Countdown>
       ) : selection ? (
         <Countdown
-          board={board}
           isStart={isStart}
-          selectionPhase={selection}
+          phaseSelect={selection}
           ciao={20}
         ></Countdown>
       ) : null}
-      <button onClick={() => dispatch(generateRandom())}> Genera random</button>
+      <button onClick={() => dispatch(resetBoard())}> ResetGame</button>
       {isStart ? (
         <div id="game-board" className="hex-container">
           <h1>
@@ -150,6 +152,7 @@ function GameBoard() {
               : "Memorizza i numeri"}
           </h1>
           <h2>Punteggio: {points}</h2>
+          <h3>Livello :{stage}</h3>
           {selection && messageDisplay.length > 0 ? (
             <h3
               className={
