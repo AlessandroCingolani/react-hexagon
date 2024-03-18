@@ -5,7 +5,7 @@ import { generateTotal } from "../../redux/boardSlice";
 import { addUserSelection } from "../../redux/boardSlice";
 import { selectionPhase } from "../../redux/boardSlice";
 import { selectedCell } from "../../redux/boardSlice";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "./GameBoard.scss";
 import Countdown from "../Countdown/Countdown";
 import { useSelector, useDispatch } from "react-redux";
@@ -26,6 +26,9 @@ function GameBoard() {
   function arrayStructure(cell, rowIndex, cellIndex) {
     return [cell, rowIndex, cellIndex];
   }
+
+  // message
+  const [messageDisplay, setMessaggio] = useState("");
 
   // functions for check array is inside userSelected
   function checkArray(arr1, arr2) {
@@ -59,16 +62,19 @@ function GameBoard() {
         if (!isDuplicateArray(clickedData, userSelected)) {
           dispatch(addUserSelection(clickedData));
           dispatch(increment());
-          console.log("CORRECT");
+          setMessaggio("Combinazione corretta");
           dispatch(selectedCell("DELETE"));
         } else {
           dispatch(decrement());
           dispatch(selectedCell("DELETE"));
+
+          setMessaggio("Combinazione già esistente");
           console.log("EXIST");
         }
       } else {
         dispatch(decrement());
         dispatch(selectedCell("DELETE"));
+        setMessaggio("Combinazione errata");
         console.log("WRONG");
       }
     }
@@ -144,6 +150,18 @@ function GameBoard() {
               : "Memorizza i numeri"}
           </h1>
           <h2>Punteggio: {points}</h2>
+          {selection && messageDisplay.length > 0 ? (
+            <h3
+              className={
+                messageDisplay === "Combinazione corretta"
+                  ? "text-white bg-success w-25 text-center py-3"
+                  : "text-white  bg-danger w-25 text-center py-3"
+              }
+            >
+              {messageDisplay}
+            </h3>
+          ) : null}
+
           {board.map((row, rowIndex) => (
             <div key={rowIndex} className="row">
               {row.map((cell, cellIndex) => {
