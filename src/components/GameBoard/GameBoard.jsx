@@ -1,10 +1,11 @@
-import { increment } from "../../redux/counterSlice";
-import { decrement } from "../../redux/counterSlice";
-import { generateTotal } from "../../redux/boardSlice";
-import { addUserSelection } from "../../redux/boardSlice";
-import { selectionPhase } from "../../redux/boardSlice";
-import { selectedCell } from "../../redux/boardSlice";
-import { resetBoard } from "../../redux/boardSlice";
+import { increment, decrement } from "../../redux/counterSlice";
+import {
+  generateTotal,
+  addUserSelection,
+  selectionPhase,
+  selectedCell,
+  resetBoard,
+} from "../../redux/boardSlice";
 import { useEffect, useState } from "react";
 import "./GameBoard.scss";
 import Countdown from "../Countdown/Countdown";
@@ -129,20 +130,14 @@ function GameBoard() {
       }, 5000);
       return () => clearTimeout(timer);
     }
-  }, [board, stage]);
+  }, [board]);
 
   return (
     <main>
-      {/* COUNTDOWN COMPONENT */}
-      {isStart && !selection ? (
-        <Countdown isStart={isStart} ciao={2}></Countdown>
-      ) : selection ? (
-        <Countdown
-          isStart={isStart}
-          phaseSelect={selection}
-          ciao={20}
-        ></Countdown>
-      ) : null}
+      {isStart && !selection && <Countdown isStart={isStart} ciao={2} />}
+      {isStart && selection && (
+        <Countdown isStart={isStart} phaseSelect={selection} ciao={10} />
+      )}
       <button onClick={() => dispatch(resetBoard())}> ResetGame</button>
       {isStart ? (
         <div id="game-board" className="hex-container">
