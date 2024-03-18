@@ -1,21 +1,24 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+// default initial state app
+const initialState = {
+  value:[
+    [0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0],
+  ],
+  sumNumber:0,
+  startGame:false,
+  userSelections: [],
+  selectionPhase:null,
+  clickedData:[]
+};
+
 export const boardSlice = createSlice({
   name:'board',
-  initialState:{
-    value:[
-      [0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0],
-    ],
-    sumNumber:0,
-    startGame:false,
-    userSelections: [],
-    selectionPhase:null,
-    clickedData:[]
-  },
+  initialState:initialState,
   reducers:{
     generateRandom: (state) => {
       // map row
@@ -29,7 +32,10 @@ export const boardSlice = createSlice({
       return {...state, value: updatedValue };
     },
     // number to reach with 3 selection
-    generateTotal:(state)=> {
+    generateTotal:(state,action)=> {
+      if(action.payload === 'RESET'){
+        return {...state,sumNumber:0}
+      }
       const updateNumber = Math.floor(Math.random() * 12) + 10
         return {...state ,sumNumber:updateNumber}  
     },
@@ -39,8 +45,12 @@ export const boardSlice = createSlice({
     },
     // save user selections when are different 
     addUserSelection: (state, action) => {
-      state.userSelections = [...state.userSelections, action.payload];
-      console.log(state.userSelections);
+      if(action.payload === "DELETE"){
+        return {...state, userSelections : []};
+      }else {
+        state.userSelections = [...state.userSelections, action.payload];
+      }
+     
     },
     selectionPhase: (state, newValue) => {
       console.log(newValue.payload);
@@ -48,13 +58,17 @@ export const boardSlice = createSlice({
     },
     selectedCell: (state, newValue) => {
       if(newValue.payload === 'DELETE') {
-        console.log('SVUOTO ARRAY'+ state.clickedData);
+        // console.log('SVUOTO ARRAY'+ state.clickedData);
         return { ...state, clickedData: [] }
       }
       const newClickedData = state.clickedData.concat(newValue.payload);
       return { ...state, clickedData: newClickedData };
+    },
+    resetBoard: () => {
+      // Reset game
+      return initialState;
     }
   }
 })
-export const {generateRandom,generateTotal,startGame,addUserSelection, selectionPhase,selectedCell} = boardSlice.actions
+export const {generateRandom,generateTotal,startGame,addUserSelection, selectionPhase,selectedCell,resetBoard} = boardSlice.actions
 export const boardReducer = boardSlice.reducer
