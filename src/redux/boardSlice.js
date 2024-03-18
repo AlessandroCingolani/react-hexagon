@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-
 export const boardSlice = createSlice({
   name:'board',
   initialState:{
@@ -14,7 +13,8 @@ export const boardSlice = createSlice({
     sumNumber:0,
     startGame:false,
     userSelections: [],
-    selectionPhase:null
+    selectionPhase:null,
+    clickedData:[]
   },
   reducers:{
     generateRandom: (state) => {
@@ -45,8 +45,16 @@ export const boardSlice = createSlice({
     selectionPhase: (state, newValue) => {
       console.log(newValue.payload);
       return {...state, selectionPhase: newValue.payload};
+    },
+    selectedCell: (state, newValue) => {
+      if(newValue.payload === 'DELETE') {
+        console.log('SVUOTO ARRAY'+ state.clickedData);
+        return { ...state, clickedData: [] }
+      }
+      const newClickedData = state.clickedData.concat(newValue.payload);
+      return { ...state, clickedData: newClickedData };
     }
   }
 })
-export const {generateRandom,generateTotal,startGame,addUserSelection, selectionPhase} = boardSlice.actions
+export const {generateRandom,generateTotal,startGame,addUserSelection, selectionPhase,selectedCell} = boardSlice.actions
 export const boardReducer = boardSlice.reducer
