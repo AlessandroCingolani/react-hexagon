@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { startGame } from "../../redux/boardSlice";
 import { generateRandom } from "../../redux/boardSlice";
 import { selectionPhase } from "../../redux/boardSlice";
+import { resetCounter } from "../../redux/counterSlice";
 
 function Title() {
   const isStart = useSelector((state) => state.board.startGame);
@@ -24,6 +25,7 @@ function Title() {
               dispatch(startGame());
               dispatch(generateRandom());
               dispatch(selectionPhase(false));
+              dispatch(resetCounter());
             }}
             className="btn btn-success"
           >
