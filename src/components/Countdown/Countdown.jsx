@@ -1,8 +1,7 @@
 import "./Countdown.scss";
 import { useEffect, useState } from "react";
 import { incrementStageLevel } from "../../redux/counterSlice";
-import { generateRandom } from "../../redux/boardSlice";
-import { selectionPhase } from "../../redux/boardSlice";
+import { generateRandom, selectionPhase } from "../../redux/boardSlice";
 import { useSelector, useDispatch } from "react-redux";
 function Countdown({ isStart, phaseSelect, ciao }) {
   const [seconds, setSeconds] = useState(ciao);
@@ -12,15 +11,16 @@ function Countdown({ isStart, phaseSelect, ciao }) {
 
   useEffect(() => {
     if (isStart) {
-      setSeconds(ciao);
       const timer = setInterval(() => {
+        console.log(seconds);
         setSeconds((prevSeconds) => {
+          console.log(seconds);
           if (prevSeconds === 0) {
             if (phaseSelect && stage < 6) {
-              dispatch(generateRandom());
-              dispatch(selectionPhase(false));
-              dispatch(incrementStageLevel());
               clearInterval(timer);
+              dispatch(generateRandom());
+              dispatch(incrementStageLevel());
+              dispatch(selectionPhase(false));
               return 0;
             } else {
               clearInterval(timer);
@@ -34,7 +34,7 @@ function Countdown({ isStart, phaseSelect, ciao }) {
 
       return () => clearInterval(timer);
     }
-  }, [phaseSelect, stage]);
+  }, [phaseSelect]);
 
   return <>{seconds > 0 && isStart ? <h3>Countdown:{seconds}</h3> : null}</>;
 }
