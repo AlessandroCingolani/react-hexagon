@@ -1,8 +1,11 @@
 import "./Title.scss";
 import { useSelector, useDispatch } from "react-redux";
-import { startGame } from "../../redux/boardSlice";
-import { generateRandom } from "../../redux/boardSlice";
-import { selectionPhase } from "../../redux/boardSlice";
+import {
+  generateRandom,
+  selectionPhase,
+  startGame,
+  gamePhase,
+} from "../../redux/boardSlice";
 import { resetCounter } from "../../redux/counterSlice";
 
 function Title() {
@@ -26,6 +29,7 @@ function Title() {
               dispatch(generateRandom());
               dispatch(selectionPhase(false));
               dispatch(resetCounter());
+              dispatch(gamePhase("MEMORIZE"));
             }}
             className="btn btn-success"
           >
