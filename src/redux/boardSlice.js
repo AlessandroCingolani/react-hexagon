@@ -13,7 +13,8 @@ const initialState = {
   startGame:false,
   userSelections: [],
   selectionPhase:null,
-  clickedData:[]
+  clickedData:[],
+  gamePhase:""
 };
 
 export const boardSlice = createSlice({
@@ -43,6 +44,11 @@ export const boardSlice = createSlice({
     startGame:(state)=> {
        return {...state ,startGame:true}  
     },
+    // flag nextLevel
+    gamePhase:(state,action)=> {
+      console.log(action.payload);
+      return {...state, gamePhase: action.payload};
+    },
     // save user selections when are different 
     addUserSelection: (state, action) => {
       if(action.payload === "DELETE"){
@@ -52,6 +58,7 @@ export const boardSlice = createSlice({
       }
      
     },
+    // phase selection
     selectionPhase: (state, newValue) => {
       console.log(newValue.payload);
       return {...state, selectionPhase: newValue.payload};
@@ -70,5 +77,5 @@ export const boardSlice = createSlice({
     }
   }
 })
-export const {generateRandom,generateTotal,startGame,addUserSelection, selectionPhase,selectedCell,resetBoard} = boardSlice.actions
+export const {generateRandom,generateTotal,startGame,addUserSelection, selectionPhase,selectedCell,resetBoard,gamePhase} = boardSlice.actions
 export const boardReducer = boardSlice.reducer
