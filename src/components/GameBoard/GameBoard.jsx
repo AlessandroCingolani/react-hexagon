@@ -1,10 +1,15 @@
-import { increment, decrement } from "../../redux/counterSlice";
+import {
+  increment,
+  decrement,
+  incrementStageLevel,
+} from "../../redux/counterSlice";
 import {
   generateTotal,
   addUserSelection,
-  selectionPhase,
   selectedCell,
   resetBoard,
+  gamePhase,
+  generateRandom,
 } from "../../redux/boardSlice";
 import { useEffect, useState } from "react";
 import "./GameBoard.scss";
@@ -16,6 +21,7 @@ function GameBoard() {
   const points = useSelector((state) => state.counter.value);
   const stage = useSelector((state) => state.counter.stage);
   const board = useSelector((state) => state.board.value);
+  const phase = useSelector((state) => state.board.gamePhase);
   const isStart = useSelector((state) => state.board.startGame);
   const sumNumber = useSelector((state) => state.board.sumNumber);
   const selection = useSelector((state) => state.board.selectionPhase);
@@ -109,34 +115,33 @@ function GameBoard() {
   // timer to display numberSum
   useEffect(() => {
     // reset at start
-    setMessage("");
-    dispatch(selectedCell("DELETE"));
-    dispatch(generateTotal("RESET"));
-    dispatch(addUserSelection("DELETE"));
-
-    let cells = document.querySelectorAll(".cell");
-    cells.forEach((cell) => {
-      cell.classList.remove("d-none");
-    });
-    if (isStart) {
-      const timer = setTimeout(() => {
-        dispatch(generateTotal());
-        dispatch(selectionPhase(true));
-        // select class cell and add d-none after the timeout
-        // let cells = document.querySelectorAll(".cell");
-        // cells.forEach((cell) => {
-        //   cell.classList.add("d-none");
-        // });
-      }, 5000);
-      return () => clearTimeout(timer);
+    if (phase === "END_LEVEL") {
+      setMessage("");
+      dispatch(selectedCell("DELETE"));
+      dispatch(generateTotal("RESET"));
+      dispatch(addUserSelection("DELETE"));
+      let cells = document.querySelectorAll(".cell");
+      cells.forEach((cell) => {
+        cell.classList.remove("d-none");
+      });
     }
-  }, [board]);
+
+    // select class cell and add d-none after the timeout
+    if (phase === "SELECTION") {
+      let cells = document.querySelectorAll(".cell");
+      cells.forEach((cell) => {
+        cell.classList.add("d-none");
+      });
+    }
+  }, [board, phase]);
 
   return (
     <main>
-      {isStart && !selection && <Countdown isStart={isStart} ciao={2} />}
-      {isStart && selection && (
-        <Countdown isStart={isStart} phaseSelect={selection} ciao={10} />
+      {phase === "MEMORIZE" ? (
+        <Countdown phase={phase} isStart={isStart} phaseSelect={selection} />
+      ) : null}
+      {isStart && phase === "SELECTION" && (
+        <Countdown phase={phase} isStart={isStart} phaseSelect={selection} />
       )}
       <button onClick={() => dispatch(resetBoard())}> ResetGame</button>
       {isStart ? (
@@ -159,7 +164,17 @@ function GameBoard() {
               {messageDisplay}
             </h3>
           ) : null}
-
+          {phase === "END_LEVEL" && (
+            <button
+              onClick={() => {
+                dispatch(generateRandom());
+                dispatch(incrementStageLevel());
+                dispatch(gamePhase("MEMORIZE"));
+              }}
+            >
+              Next level
+            </button>
+          )}
           {board.map((row, rowIndex) => (
             <div key={rowIndex} className="row">
               {row.map((cell, cellIndex) => {
