@@ -4,10 +4,11 @@ import {
   selectionPhase,
   generateTotal,
   gamePhase,
+  endGame,
 } from "../../redux/boardSlice";
 import { useSelector, useDispatch } from "react-redux";
-function Countdown({ isStart, phaseSelect, phase }) {
-  const [seconds, setSeconds] = useState(5);
+function Countdown({ isStart, phaseSelect, phase, stage, time }) {
+  const [seconds, setSeconds] = useState(time);
   // dispatch
   const dispatch = useDispatch();
 
@@ -38,10 +39,15 @@ function Countdown({ isStart, phaseSelect, phase }) {
       const timer = setInterval(() => {
         setSeconds((prevSeconds) => {
           if (prevSeconds === 0) {
-            clearInterval(timer);
-            dispatch(gamePhase("END_LEVEL"));
-            dispatch(selectionPhase(false));
-            return 0;
+            if (stage === 2) {
+              dispatch(endGame());
+              console.log("end gameeee");
+            } else {
+              clearInterval(timer);
+              dispatch(gamePhase("END_LEVEL"));
+              dispatch(selectionPhase(false));
+              return 0;
+            }
           } else {
             return prevSeconds - 1;
           }
