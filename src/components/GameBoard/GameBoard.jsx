@@ -47,6 +47,7 @@ function GameBoard() {
 
   // string display in selection phase
   const characters = "abcdefghijklmnopqrs";
+  const splitCharacters = characters.toLocaleUpperCase().split("");
 
   // functions for check array is inside userSelected
   function checkArray(arr1, arr2) {
@@ -106,7 +107,7 @@ function GameBoard() {
       console.log("INATTIVO");
     } else {
       const newData = arrayStructure(cell, rowIndex, cellIndex);
-
+      console.log(cell, rowIndex, cellIndex);
       // method some at click check if cicled item are inside at cicled data
       const isAlreadyClicked = clickedData.some(
         (item) =>
@@ -131,32 +132,35 @@ function GameBoard() {
       dispatch(generateTotal("RESET"));
       dispatch(addUserSelection("DELETE"));
       let cells = document.querySelectorAll(".cell");
-      cells.forEach((cell) => {
-        cell.classList.remove("d-none");
+      const flattenedArray = board.reduce((acc, curr) => acc.concat(curr), []);
+      cells.forEach((cell, index) => {
+        // replace text content with array concat board only graphics
+        cell.textContent = cell.textContent.replace(
+          /^.+/,
+          flattenedArray[index]
+        );
       });
     }
 
     // select class cell and add d-none after the timeout
+    // if (phase === "SELECTION") {
+    //   let splitCharapters = characters.split("");
+    //   console.log(splitCharapters);
+    //   let cells = document.querySelectorAll(".cell");
+    //   cells.forEach((cell) => {
+    //     cell.classList.add("d-none");
+    //   });
     if (phase === "SELECTION") {
-      let splitCharapters = characters.split("");
-      console.log(splitCharapters);
       let cells = document.querySelectorAll(".cell");
-      cells.forEach((cell) => {
-        cell.classList.add("d-none");
+      cells.forEach((cell, index) => {
+        // replace text span with characters
+        cell.textContent = cell.textContent.replace(
+          /^.+/,
+          splitCharacters[index]
+        );
       });
-      // if (phase === "SELECTION") {
-      //   let splitCharacters = characters.split("");
-      //   console.log(splitCharacters);
-      //   let cells = document.querySelectorAll(".cell");
-      //   cells.forEach((cell, index) => {
-      //     // Sostituisci il testo della cella corrente con il carattere diviso corrispondente
-      //     cell.textContent = cell.textContent.replace(
-      //       /^.+/,
-      //       splitCharacters[index]
-      //     );
-      //   });
-      // }
     }
+    // }
   }, [board, phase]);
 
   // save local storege points
@@ -182,7 +186,7 @@ function GameBoard() {
       ) : null}
       {isStart && phase === "SELECTION" && (
         <Countdown
-          time={5}
+          time={30}
           stage={stage}
           phase={phase}
           isStart={isStart}
