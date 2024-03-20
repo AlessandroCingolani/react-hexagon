@@ -14,7 +14,8 @@ const initialState = {
   userSelections: [],
   selectionPhase:null,
   clickedData:[],
-  gamePhase:""
+  gamePhase:"",
+  endGame:false
 };
 
 export const boardSlice = createSlice({
@@ -44,6 +45,11 @@ export const boardSlice = createSlice({
     startGame:(state)=> {
        return {...state ,startGame:true}  
     },
+    // end game
+    endGame:(state)=> {
+       return {...state ,endGame:true}  
+    },
+
     // flag nextLevel
     gamePhase:(state,action)=> {
       console.log(action.payload);
@@ -77,5 +83,5 @@ export const boardSlice = createSlice({
     }
   }
 })
-export const {generateRandom,generateTotal,startGame,addUserSelection, selectionPhase,selectedCell,resetBoard,gamePhase} = boardSlice.actions
+export const {generateRandom,generateTotal,startGame,addUserSelection, selectionPhase,selectedCell,resetBoard,gamePhase,endGame} = boardSlice.actions
 export const boardReducer = boardSlice.reducer
