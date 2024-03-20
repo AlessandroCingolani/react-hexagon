@@ -23,6 +23,7 @@ function GameBoard() {
   const board = useSelector((state) => state.board.value);
   const phase = useSelector((state) => state.board.gamePhase);
   const isStart = useSelector((state) => state.board.startGame);
+  const isEnd = useSelector((state) => state.board.endGame);
   const sumNumber = useSelector((state) => state.board.sumNumber);
   const selection = useSelector((state) => state.board.selectionPhase);
   const clickedData = useSelector((state) => state.board.clickedData);
@@ -37,6 +38,15 @@ function GameBoard() {
 
   // message
   const [messageDisplay, setMessage] = useState("");
+
+  // take local storage points
+  const lastPoints = localStorage.getItem("endPoints");
+
+  // converted storage into int
+  const intLastPoints = parseInt(lastPoints, 10);
+
+  // string display in selection phase
+  const characters = "abcdefghijklmnopqrs";
 
   // functions for check array is inside userSelected
   function checkArray(arr1, arr2) {
@@ -115,7 +125,7 @@ function GameBoard() {
   // timer to display numberSum
   useEffect(() => {
     // reset at start
-    if (phase === "END_LEVEL") {
+    if (phase === "END_LEVEL" || phase === "MEMORIZE") {
       setMessage("");
       dispatch(selectedCell("DELETE"));
       dispatch(generateTotal("RESET"));
@@ -128,27 +138,66 @@ function GameBoard() {
 
     // select class cell and add d-none after the timeout
     if (phase === "SELECTION") {
+      let splitCharapters = characters.split("");
+      console.log(splitCharapters);
       let cells = document.querySelectorAll(".cell");
       cells.forEach((cell) => {
         cell.classList.add("d-none");
       });
+      // if (phase === "SELECTION") {
+      //   let splitCharacters = characters.split("");
+      //   console.log(splitCharacters);
+      //   let cells = document.querySelectorAll(".cell");
+      //   cells.forEach((cell, index) => {
+      //     // Sostituisci il testo della cella corrente con il carattere diviso corrispondente
+      //     cell.textContent = cell.textContent.replace(
+      //       /^.+/,
+      //       splitCharacters[index]
+      //     );
+      //   });
+      // }
     }
   }, [board, phase]);
+
+  // save local storege points
+  useEffect(() => {
+    if (isEnd) {
+      if (points < intLastPoints) {
+        localStorage.setItem("endPoints", intLastPoints);
+      } else {
+        localStorage.setItem("endPoints", points);
+      }
+    }
+  }, [isEnd]);
 
   return (
     <main>
       {phase === "MEMORIZE" ? (
-        <Countdown phase={phase} isStart={isStart} phaseSelect={selection} />
+        <Countdown
+          time={2}
+          phase={phase}
+          isStart={isStart}
+          phaseSelect={selection}
+        />
       ) : null}
       {isStart && phase === "SELECTION" && (
-        <Countdown phase={phase} isStart={isStart} phaseSelect={selection} />
+        <Countdown
+          time={5}
+          stage={stage}
+          phase={phase}
+          isStart={isStart}
+          phaseSelect={selection}
+        />
       )}
       <button onClick={() => dispatch(resetBoard())}> ResetGame</button>
-      {isStart ? (
+      {!isNaN(intLastPoints) && !isStart && <h4>Best Score:{intLastPoints}</h4>}
+      {isStart && !isEnd ? (
         <div id="game-board" className="hex-container">
           <h1>
             {sumNumber > 0
               ? "Somma dei tre numeri:" + sumNumber
+              : phase === "END_LEVEL"
+              ? `Fine livello ${stage}`
               : "Memorizza i numeri"}
           </h1>
           <h2>Punteggio: {points}</h2>
@@ -203,6 +252,8 @@ function GameBoard() {
             </div>
           ))}
         </div>
+      ) : isEnd ? (
+        <h1>Il tuo punteggio finale è: {points}</h1>
       ) : null}
     </main>
   );
